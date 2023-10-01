@@ -26,6 +26,7 @@ app.use(cors());
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 
 import { register } from './controller/auth.js';
+import authRoutes from './routes/auth.js';
 
 /* file storage */
 const storage = multer.diskStorage({
@@ -40,6 +41,9 @@ const upload = multer({ storage });
 
 /* routes with files */
 app.post('/auth/register', upload.single('picture'), register);
+
+/* routes */
+app.use('/auth', authRoutes);
 
 /* set up mongoose */
 const PORT = process.env.PORT || 6001;

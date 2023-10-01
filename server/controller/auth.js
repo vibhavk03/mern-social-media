@@ -30,7 +30,6 @@ const register = async (req, res) => {
       viewedProfile: Math.floor(Math.random() * 10000),
       impressions: Math.floor(Math.random() * 10000),
     });
-    console.log('user', user);
     res.status(201).json({
       message: 'user created',
       user,
@@ -42,4 +41,26 @@ const register = async (req, res) => {
   }
 };
 
-export { register };
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email: email });
+    if (user) {
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        res.status(400).json({ message: 'invalid credentials' });
+      }
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      delete user.password;
+      res
+        .status(200)
+        .json({ message: `logged in as ${user.email}`, token, user });
+    } else {
+      res.status(400).json({ message: 'user does not exist' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: `error in loggin in: ${error.message}` });
+  }
+};
+
+export { register, login };

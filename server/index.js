@@ -9,6 +9,11 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import { register } from './controller/auth.js';
+import authRoutes from './routes/auth.js';
+import { verifyToken } from './middleware/auth.js';
+import userRoutes from './routes/users.js';
+
 /* configurations */
 /* only need to do this when we are using type module in package.json */
 const __filename = fileURLToPath(import.meta.url);
@@ -24,9 +29,6 @@ app.use(bodyParser.json({ limit: '30mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
 app.use(cors());
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
-
-import { register } from './controller/auth.js';
-import authRoutes from './routes/auth.js';
 
 /* file storage */
 const storage = multer.diskStorage({
@@ -44,6 +46,7 @@ app.post('/auth/register', upload.single('picture'), register);
 
 /* routes */
 app.use('/auth', authRoutes);
+app.use('/users', verifyToken, userRoutes);
 
 /* set up mongoose */
 const PORT = process.env.PORT || 6001;

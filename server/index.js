@@ -13,6 +13,8 @@ import { register } from './controller/auth.js';
 import authRoutes from './routes/auth.js';
 import { verifyToken } from './middleware/auth.js';
 import userRoutes from './routes/users.js';
+import { createPost } from './controller/post.js';
+import postRoutes from './routes/post.js';
 
 /* configurations */
 /* only need to do this when we are using type module in package.json */
@@ -43,10 +45,12 @@ const upload = multer({ storage });
 
 /* routes with files */
 app.post('/auth/register', upload.single('picture'), register);
+app.post('/posts', verifyToken, upload.single('picture'), createPost);
 
 /* routes */
 app.use('/auth', authRoutes);
 app.use('/users', verifyToken, userRoutes);
+app.use('/posts', verifyToken, postRoutes);
 
 /* set up mongoose */
 const PORT = process.env.PORT || 6001;

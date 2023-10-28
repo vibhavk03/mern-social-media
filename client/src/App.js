@@ -14,6 +14,7 @@ function App() {
   const mode = useSelector((state) => state.mode);
   /* use memo will cache the value, it will only refresh when the mode value changes */
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
+  const isAuth = Boolean(useSelector((state) => state.token));
 
   return (
     <div className="app">
@@ -21,9 +22,15 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline /> {/* css reset for material ui */}
           <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/" element={isAuth ? <HomePage /> : <LoginPage />} />
+            <Route
+              path="/home"
+              element={isAuth ? <HomePage /> : <LoginPage />}
+            />
+            <Route
+              path="/profile/:userId"
+              element={isAuth ? <ProfilePage /> : <LoginPage />}
+            />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>
